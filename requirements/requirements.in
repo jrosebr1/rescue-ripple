@@ -1,2 +1,7 @@
 django
-
+django-environ
+celery[redis]
+openai
+pandas
+scikit-learn
+tqdm
