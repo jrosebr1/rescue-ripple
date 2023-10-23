@@ -19,7 +19,9 @@ attrs==23.1.0
 billiard==4.1.0
     # via celery
 celery[redis]==5.3.4
-    # via -r requirements/requirements.in
+    # via
+    #   -r requirements/requirements.in
+    #   flower
 certifi==2023.7.22
     # via requests
 charset-normalizer==3.3.0
@@ -42,10 +44,14 @@ django==4.2.6
     # via -r requirements/requirements.in
 django-environ==0.11.2
     # via -r requirements/requirements.in
+flower==2.0.1
+    # via -r requirements/requirements.in
 frozenlist==1.4.0
     # via
     #   aiohttp
     #   aiosignal
+humanize==4.8.0
+    # via flower
 idna==3.4
     # via
     #   requests
@@ -67,6 +73,8 @@ openai==0.28.1
     # via -r requirements/requirements.in
 pandas==2.1.1
     # via -r requirements/requirements.in
+prometheus-client==0.17.1
+    # via flower
 prompt-toolkit==3.0.39
     # via click-repl
 python-dateutil==2.8.2
@@ -74,7 +82,9 @@ python-dateutil==2.8.2
     #   celery
     #   pandas
 pytz==2023.3.post1
-    # via pandas
+    # via
+    #   flower
+    #   pandas
 redis==4.6.0
     # via celery
 requests==2.31.0
@@ -89,6 +99,8 @@ sqlparse==0.4.4
     # via django
 threadpoolctl==3.2.0
     # via scikit-learn
+tornado==6.3.3
+    # via flower
 tqdm==4.66.1
     # via
     #   -r requirements/requirements.in

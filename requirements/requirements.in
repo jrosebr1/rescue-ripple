@@ -1,6 +1,7 @@
 django
 django-environ
 celery[redis]
+flower
 openai
 pandas
 scikit-learn

@@ -4,3 +4,4 @@ from . import models
 
 # register models
 admin.site.register(models.SocialMediaPost)
+admin.site.register(models.Prediction)

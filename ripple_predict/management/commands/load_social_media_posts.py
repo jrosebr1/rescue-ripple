@@ -1,5 +1,5 @@
 # USAGE
-# python manage.py load_social_media_posts --tsv ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_train.tsv
+# python manage.py load_social_media_posts --tsv ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_test.tsv
 
 # import the necessary packages
 from django.core.management.base import BaseCommand

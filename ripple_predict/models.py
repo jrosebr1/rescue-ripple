@@ -11,7 +11,7 @@ class SocialMediaPost(models.Model):
 
     def __str__(self):
         # return a string representation of the post
-        return "{} : {}".format(self.post_id, self.text[:32])
+        return " : ".join([self.post_id, self.text[:32]])
 
     class Meta:
         verbose_name = "SocialMediaPost"
@@ -25,7 +25,33 @@ class Prediction(models.Model):
         on_delete=models.CASCADE,
         db_index=True
     )
-    algo = models.CharField(max_length=64, db_index=True)
+    experiment = models.CharField(max_length=64, db_index=True)
     response = models.TextField()
     prediction = models.CharField(max_length=256)
     date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        # initialize the prediction to be considered "correct"
+        label = "correct"
+
+        # if the ground-truth label does not match the predicted label, then
+        # update the label
+        if self.smp.label != self.prediction:
+            label = "incorrect"
+
+        # return a string representation of the prediction
+        return " : ".join([
+            self.smp.post_id,
+            self.experiment,
+            "prediction: {} ({})".format(self.prediction, label)
+        ])
+
+    @staticmethod
+    def is_prediction_exist(smp, experiment):
+        # grab all predictions from the database for the provided combination of
+        # social media post and experiment name
+        predictions = Prediction.objects.filter(smp=smp, experiment=experiment)
+
+        # return whether a prediction *already* exists in the database for this
+        # combination
+        return len(predictions) > 0
