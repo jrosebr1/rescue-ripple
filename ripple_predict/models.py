@@ -55,3 +55,7 @@ class Prediction(models.Model):
         # return whether a prediction *already* exists in the database for this
         # combination
         return len(predictions) > 0
+
+    class Meta:
+        verbose_name = "Prediction"
+        verbose_name_plural = "Predictions"

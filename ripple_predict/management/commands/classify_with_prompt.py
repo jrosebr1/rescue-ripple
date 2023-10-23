@@ -1,5 +1,5 @@
 # USAGE
-#
+# python manage.py classify_with_prompt --tsv ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_dev.tsv --experiment prompt-classification-gpt-3.5-turbo --model gpt-3.5-turbo
 
 # import the necessary packages
 from django.core.management.base import BaseCommand

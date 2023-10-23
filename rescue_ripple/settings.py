@@ -129,9 +129,12 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# grab the OpenAI API key
+OPENAI_API_KEY = env("OPENAI_API_KEY")
+
 # use Redis as the datastore between Django and Celery
 CELERY_BROKER_URL = env("REDIS_URL")
 CELERY_RESULT_BACKEND = env("REDIS_URL")
 
-# grab the OpenAI API key
-OPENAI_API_KEY = env("OPENAI_API_KEY")
+# set the rate limit for our Celery tasks
+OPENAI_TASK_LIMIT = "100/m"
