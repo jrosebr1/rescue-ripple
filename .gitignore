@@ -1,4 +1,5 @@
 .python-version
+.idea
 *.rdb
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,python,pycharm
