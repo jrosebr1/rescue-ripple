@@ -17,8 +17,13 @@ def classify_post_with_prompt(smp_id, experiment, model="gpt-3.5-turbo"):
     # grab the social media post from the database
     smp = SocialMediaPost.objects.get(id=smp_id)
 
+    # build the prompt path
+    template_path = os.path.join(
+        "ripple_predict",
+        "humaid_zero_shot_prompt.md"
+    )
+
     # construct the prompt
-    template_path = os.path.join("ripple_predict", "humaid_classify_prompt.md")
     template = get_template(template_path)
     prompt = template.render({
         "post": smp.text,

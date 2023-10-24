@@ -9,9 +9,15 @@ class SocialMediaPost(models.Model):
     label = models.CharField(max_length=128)
     date_added = models.DateTimeField(auto_now_add=True)
 
+    @staticmethod
+    def is_social_media_post_exists(post_id):
+        # the social media post exists in the database if there is already a
+        # corresponding entry with the same post ID
+        return SocialMediaPost.objects.filter(post_id=post_id).count() > 0
+
     def __str__(self):
         # return a string representation of the post
-        return " : ".join([self.post_id, self.text[:32]])
+        return " : ".join([self.post_id, self.text[:32] + "..."])
 
     class Meta:
         verbose_name = "SocialMediaPost"
@@ -30,6 +36,15 @@ class Prediction(models.Model):
     prediction = models.CharField(max_length=256)
     date_added = models.DateTimeField(auto_now_add=True)
 
+    @staticmethod
+    def is_prediction_exist(smp, experiment):
+        # return whether a prediction *already* exists in the database for the
+        # provided combination of social media post and experiment name
+        return Prediction.objects.filter(
+            smp=smp,
+            experiment=experiment
+        ).count() > 0
+
     def __str__(self):
         # initialize the prediction to be considered "correct"
         label = "correct"
@@ -45,16 +60,6 @@ class Prediction(models.Model):
             self.experiment,
             "prediction: {} ({})".format(self.prediction, label)
         ])
-
-    @staticmethod
-    def is_prediction_exist(smp, experiment):
-        # grab all predictions from the database for the provided combination of
-        # social media post and experiment name
-        predictions = Prediction.objects.filter(smp=smp, experiment=experiment)
-
-        # return whether a prediction *already* exists in the database for this
-        # combination
-        return len(predictions) > 0
 
     class Meta:
         verbose_name = "Prediction"

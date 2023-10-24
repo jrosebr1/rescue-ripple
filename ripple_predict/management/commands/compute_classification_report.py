@@ -1,5 +1,5 @@
 # USAGE
-#
+# python manage.py compute_classification_report --tsv ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_dev.tsv --experiment zero-shot-gpt-3.5-turbo
 
 # import the necessary packages
 from django.core.management.base import BaseCommand
