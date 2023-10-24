@@ -38,12 +38,18 @@ class Command(BaseCommand):
         df = pd.read_csv(options["tsv"], sep="\t")
 
         # filter our predictions based on the tweet ID and experiment name,
-        # then extract the ground-truth labels and predicted labels, such
-        # that we can compute a classification report
         predictions = Prediction.objects.filter(
             smp__post_id__in=df["tweet_id"],
             experiment=options["experiment"]
         )
+
+        # check if no predictions were pulled from the database
+        if len(predictions) == 0:
+            self.stdout.write("* WARNING - no 'Prediction' objects found")
+            return
+
+        # extract the ground-truth labels and predicted labels such that we can
+        # compute a classification report
         y_true = [p.smp.label for p in predictions]
         y_pred = [p.prediction for p in predictions]
 
