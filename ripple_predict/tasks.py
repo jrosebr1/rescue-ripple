@@ -13,14 +13,19 @@ openai.api_key = settings.OPENAI_API_KEY
 
 
 @shared_task
-def classify_post_with_prompt(smp_id, experiment, model="gpt-3.5-turbo"):
+def classify_post_with_prompt(
+        smp_id,
+        experiment,
+        prompt_filename,
+        model="gpt-3.5-turbo"
+):
     # grab the social media post from the database
     smp = SocialMediaPost.objects.get(id=smp_id)
 
     # build the prompt path
     template_path = os.path.join(
         "ripple_predict",
-        "humaid_zero_shot_prompt.md"
+        prompt_filename
     )
 
     # construct the prompt

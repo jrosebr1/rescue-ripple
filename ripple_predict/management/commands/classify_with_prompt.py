@@ -1,5 +1,5 @@
 # USAGE
-# python manage.py classify_with_prompt --tsv ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_dev.tsv --experiment zero-shot-gpt-3.5-turbo --model gpt-3.5-turbo
+# python manage.py classify_with_prompt --tsv ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_dev.tsv --prompt humaid_zero_shot_prompt.md --experiment zero-shot-gpt-3.5-turbo --model gpt-3.5-turbo
 
 # import the necessary packages
 from django.core.management.base import BaseCommand
@@ -24,6 +24,15 @@ class Command(BaseCommand):
             type=str,
             required=True,
             help="path to HumAID TSV file"
+        )
+
+        # prompt filename to be used
+        parser.add_argument(
+            "-p",
+            "--prompt",
+            type=str,
+            required=True,
+            help="prompt filename to be used"
         )
 
         # experiment name of model/algorithm being used
@@ -79,6 +88,7 @@ class Command(BaseCommand):
                 classify_post_with_prompt.apply_async(args=[
                     smp.id,
                     options["experiment"],
+                    options["prompt"],
                     options["model"]
                 ])
                 job_counts["num_submitted"] += 1
