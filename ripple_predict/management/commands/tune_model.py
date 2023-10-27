@@ -1,15 +1,25 @@
 # USAGE
-# python manage.py foo --train ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_train.tsv --dev ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_dev.tsv --test ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_test.tsv --experiment test-ada-002
+# python manage.py tune_model --train ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_train.tsv --dev ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_dev.tsv --test ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_test.tsv --experiment test-ada-002
 
 # import the necessary packages
 from django.core.management.base import BaseCommand
 from ripple_predict.models import Embedding
+from sklearn.model_selection import GridSearchCV
+from sklearn.svm import LinearSVC
+from sklearn.metrics import classification_report
 import pandas as pd
 import numpy as np
 import json
 
 
 class Command(BaseCommand):
+
+    # define the SVM hyperparameters to tune
+    SVM_PARAMS = {
+        "C": [0.001, 0.01, 0.1, 1, 10, 100],
+        "penalty": ["l1", "l2"],
+        "loss": ["hinge", "squared_hinge"],
+    }
 
     # explain what this script does
     help = "Performs hyperparameter tuning on tweet classifiers"
@@ -53,6 +63,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # build the training data split
+        self.stdout.write("* loading data splits...")
         (X_train, y_train) = self.build_data_split(
             options["train"],
             options["experiment"]
@@ -70,19 +81,27 @@ class Command(BaseCommand):
             options["experiment"]
         )
 
-        #from sklearn.linear_model import LogisticRegression
-        #from sklearn.ensemble import RandomForestClassifier
-        from sklearn.svm import LinearSVC
-        #model = LogisticRegression()
-        #model = RandomForestClassifier()
-        model = LinearSVC()
+        # perform a grid search on the SVM hyperparameters, making sure to use
+        # larger max iterations on the SVM to encourage convergence
+        model = GridSearchCV(
+            LinearSVC(max_iter=10000, dual="auto"),
+            self.SVM_PARAMS,
+            cv=3,
+            verbose=1,
+            n_jobs=-1
+        )
         model.fit(X_train, y_train)
 
-        y_pred = model.predict(X_test)
+        # extract the best model and display its parameters
+        best_model = model.best_estimator_
+        self.stdout.write(model.best_params_)
 
-        from sklearn.metrics import classification_report
+        # TODO:
+        # Remove dev set?
+
+        # use the best model to make predictions on the test set
+        y_pred = best_model.predict(X_test)
         print(classification_report(y_test, y_pred))
-
 
     @staticmethod
     def build_data_split(input_path, experiment):
