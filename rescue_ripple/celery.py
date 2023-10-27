@@ -15,7 +15,11 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 # set rate limits for the various tasks
 app.control.rate_limit(
     "ripple_predict.tasks.classify_post_with_prompt",
-    settings.OPENAI_TASK_LIMIT
+    settings.OPENAI_PROMPT_LIMIT
+)
+app.control.rate_limit(
+    "ripple_predict.tasks.compute_embeddings",
+    settings.OPENAI_EMBEDDING_LIMIT
 )
 
 # load task modules from all registered Django app configs

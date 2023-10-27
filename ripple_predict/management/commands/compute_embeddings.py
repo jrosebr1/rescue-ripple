@@ -1,11 +1,11 @@
 # USAGE
-# python manage.py classify_with_prompt --tsv ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_dev.tsv --prompt humaid_zero_shot_prompt.md --experiment zero-shot-gpt-3.5-turbo --model gpt-3.5-turbo
+# python manage.py compute_embeddings --tsv ~/Desktop/HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_dev.tsv --experiment ada-002
 
 # import the necessary packages
 from django.core.management.base import BaseCommand
 from ripple_predict.models import SocialMediaPost
-from ripple_predict.models import Prediction
-from ripple_predict.tasks import classify_post_with_prompt
+from ripple_predict.models import Embedding
+from ripple_predict.tasks import compute_embeddings
 from tqdm import tqdm
 import pandas as pd
 
@@ -13,26 +13,17 @@ import pandas as pd
 class Command(BaseCommand):
 
     # explain what this script does
-    help = "Classifies a set of input tweets using prompt-based methods"
+    help = "Computes embeddings for input tweets using LLM"
 
     def add_arguments(self, parser):
         # path to input HumAID TSV file containing tweet IDs that we wish
-        # to classify
+        # to compute embeddings for
         parser.add_argument(
             "-t",
             "--tsv",
             type=str,
             required=True,
             help="path to HumAID TSV file"
-        )
-
-        # prompt filename to be used
-        parser.add_argument(
-            "-p",
-            "--prompt",
-            type=str,
-            required=True,
-            help="prompt filename to be used"
         )
 
         # experiment name of model/algorithm being used
@@ -44,13 +35,13 @@ class Command(BaseCommand):
             help="experiment name of model/algorithm being used"
         )
 
-        # name of OpenAI model to use for prompt-based classification
+        # name of OpenAI model to use for computing embeddings
         parser.add_argument(
             "-model",
             "--model",
             type=str,
-            required=True,
-            help="name of OpenAI model to use for prompt-based classification"
+            default="text-embedding-ada-002",
+            help="computing embeddings"
         )
 
     def handle(self, *args, **options):
@@ -59,7 +50,7 @@ class Command(BaseCommand):
 
         # initialize a results count dictionary to store integer counts on
         # number of jobs submitted, along with number of jobs skipped due to
-        # either (1) final predictions already existing in our database, or
+        # either (1) computed embeddings already existing in our database, or
         # (2) the original social media post not existing in our database
         job_counts = {
             "num_submitted": 0,
@@ -74,21 +65,20 @@ class Command(BaseCommand):
                 # grab the social media post associated with the row
                 smp = SocialMediaPost.objects.get(post_id=row["tweet_id"])
 
-                # if a prediction already exists for the combination of social
+                # if an embedding already exists for the combination of social
                 # media post and experiment, then ignore it (otherwise we'd
-                # have to resubmit the prompt to OpenAI, and pay for any
-                # associated API costs)
-                if Prediction.is_prediction_exist(smp, options["experiment"]):
+                # have to recompute the embeddings, and pay for any associated
+                # API costs)
+                if Embedding.is_embedding_exist(smp, options["experiment"]):
                     # count the number of jobs skipped to the final output
                     # prediction already existing in our database
                     job_counts["num_pred_exists"] += 1
                     continue
 
                 # submit the job to classify the current social media post
-                classify_post_with_prompt.apply_async(args=[
+                compute_embeddings.apply_async(args=[
                     smp.id,
                     options["experiment"],
-                    options["prompt"],
                     options["model"]
                 ])
                 job_counts["num_submitted"] += 1

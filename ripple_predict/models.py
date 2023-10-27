@@ -64,3 +64,33 @@ class Prediction(models.Model):
     class Meta:
         verbose_name = "Prediction"
         verbose_name_plural = "Predictions"
+
+
+class Embedding(models.Model):
+    # define the model schema
+    smp = models.ForeignKey(
+        SocialMediaPost,
+        on_delete=models.CASCADE,
+        db_index=True
+    )
+    experiment = models.CharField(max_length=64, db_index=True)
+    response = models.TextField()
+    embeddings = models.TextField()
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    @staticmethod
+    def is_embedding_exist(smp, experiment):
+        # return whether an embedding *already* exists in the database for the
+        # provided combination of social media post and experiment name
+        return Embedding.objects.filter(
+            smp=smp,
+            experiment=experiment
+        ).count() > 0
+
+    def __str__(self):
+        # return a string representation of the embedding
+        return " : ".join([self.smp.post_id, self.experiment])
+
+    class Meta:
+        verbose_name = "Embedding"
+        verbose_name_plural = "Embeddings"

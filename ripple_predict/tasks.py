@@ -1,6 +1,7 @@
 # import the necessary packages
 from ripple_predict.models import SocialMediaPost
 from ripple_predict.models import Prediction
+from ripple_predict.models import Embedding
 from django.conf import settings
 from django.template.loader import get_template
 from celery import shared_task
@@ -55,3 +56,29 @@ def classify_post_with_prompt(
         prediction=predicted_label
     )
     prediction.save()
+
+
+@shared_task
+def compute_embeddings(
+        smp_id,
+        experiment,
+        model="text-embedding-ada-002"
+):
+    # grab the social media post from the database
+    smp = SocialMediaPost.objects.get(id=smp_id)
+
+    # submit the embedding request to OpenAI
+    response = openai.Embedding.create(
+        model=model,
+        input=smp.text
+    )
+    vector = response["data"][0]["embedding"]
+
+    # store the embedding in the database
+    embedding = Embedding(
+        smp=smp,
+        experiment=experiment,
+        response=response,
+        embeddings=json.dumps(vector)
+    )
+    embedding.save()
