@@ -101,7 +101,7 @@ class Command(BaseCommand):
 
         # use the best model to make predictions on the test set
         y_pred = best_model.predict(X_test)
-        print(classification_report(y_test, y_pred))
+        self.stdout.write(classification_report(y_test, y_pred, digits=3))
 
     @staticmethod
     def build_data_split(input_path, experiment):
