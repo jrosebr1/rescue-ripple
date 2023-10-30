@@ -1,5 +1,6 @@
 # import the necessary packages
 from django.db import models
+import json
 
 
 class SocialMediaPost(models.Model):
@@ -75,8 +76,16 @@ class Embedding(models.Model):
     )
     experiment = models.CharField(max_length=64, db_index=True)
     response = models.TextField()
-    embeddings = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def embeddings(self):
+        # parse the JSON blob, then extract the vector embeddings
+        blob = json.loads(self.response)
+        vector = blob["data"][0]["embedding"]
+
+        # return the embeddings
+        return vector
 
     @staticmethod
     def is_embedding_exist(smp, experiment):
