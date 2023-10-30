@@ -54,4 +54,4 @@ class Command(BaseCommand):
         y_pred = [p.prediction for p in predictions]
 
         # display our classification report
-        self.stdout.write(classification_report(y_true, y_pred))
+        self.stdout.write(classification_report(y_true, y_pred, digits=3))
