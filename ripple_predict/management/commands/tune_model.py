@@ -11,11 +11,6 @@ from sklearn.metrics import classification_report
 from pprint import pformat
 import pandas as pd
 import numpy as np
-import json
-
-# TODO:
-# Backup db, then remove 'embeddings' column and replace with an
-# @property that parses JSON blob. Will cleanup db size considerably.
 
 
 class Command(BaseCommand):
@@ -136,7 +131,7 @@ class Command(BaseCommand):
         )
 
         # build the data vectors and class labels
-        X = np.array([json.loads(e.embeddings) for e in embeddings])
+        X = np.array([e.embeddings for e in embeddings])
         y = np.array([e.smp.label for e in embeddings])
 
         # return the data and labels
