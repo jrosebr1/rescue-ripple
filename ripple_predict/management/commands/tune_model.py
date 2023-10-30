@@ -93,8 +93,8 @@ class Command(BaseCommand):
         # evaluates on the dev set)
         X_combined = np.vstack([X_train, X_dev])
         y_combined = np.hstack([y_train, y_dev])
-        dev_fold = [-1] * len(X_train) + [0] * len(X_dev)
-        ps = PredefinedSplit(dev_fold)
+        fold = [-1] * len(X_train) + [0] * len(X_dev)
+        ps = PredefinedSplit(fold)
 
         # perform a grid search on the SVM hyperparameters, making sure to use
         # larger max iterations on the SVM to encourage convergence
