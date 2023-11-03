@@ -1,4 +1,4 @@
-# Rescue Ripple: Zero-shot, Prompt-based Classification with LLMs for Disaster Tweet Analysis
+# Rescue Ripple: Zero-Shot, Prompt-Based Classification with LLMs for Disaster Tweet Analysis
 
 ![Rescue ripple header](assets/rescue_ripple.png)
 
