@@ -343,7 +343,7 @@ $ python manage.py classify_with_prompt \
 	--model gpt-3.5-turbo
 ```
 
-_**Note:** Make sure both Redis and Celery are running before you run `classify_with_prompt`! Celery handles managing all LLM prompt tasks, and is **required** when running the code from this repo.
+_**Note:** Make sure both Redis and Celery are running before you run `classify_with_prompt`! Celery handles managing all LLM prompt tasks, and is **required** when running the code from this repo._
 
 ### Computing prompt-based classification accuracy
 
