@@ -6,7 +6,7 @@ In times of crisis, rapid and accurate analysis of social media can be lifesavin
 
 We leverage the pre-existing knowledge encapsulated within state-of-the-art LLMs to interpret the context and content of tweets, applying carefully engineered prompts to guide the model towards accurate classification. This research not only challenges the status quo by showcasing that zero-shot classification can rival traditional machine learning classifiers in accuracy but also highlights a remarkable improvement in efficiency, a critical factor during disaster scenarios.
 
-In a comparative study against the baseline methods reported with the [HumAID dataset](#), Rescue Ripple achieves comparable, and in some cases superior, performance metrics.
+In a comparative study against the baseline methods reported with the [HumAID dataset](https://crisisnlp.qcri.org/humaid_dataset), Rescue Ripple achieves comparable, and in some cases superior, performance metrics.
 
 Furthermore, by utilizing LLM embeddings as feature representations for a Linear SVM, we provide an approach that balances the trade-off between performance and computational demand, especially suitable for resource-constrained environments.
 
@@ -14,27 +14,29 @@ This work's findings underscore the untapped potential of LLMs in real-world hum
 
 ## HumAID dataset
 
-> _"The HumAID Twitter dataset consists of several thousands of manually annotated tweets that has been collected during 19 major natural disaster events including earthquakes, hurricanes, wildfires, and floods, which happened from 2016 to 2019 across different parts of the World. The annotations in the provided datasets consists of following humanitarian categories. The dataset consists only english tweets and it is the largest dataset for crisis informatics so far." - [Alam et al. (2021)](https://crisisnlp.qcri.org/humaid_dataset)
+> _"The HumAID Twitter dataset consists of several thousands of manually annotated tweets that has been collected during 19 major natural disaster events including earthquakes, hurricanes, wildfires, and floods, which happened from 2016 to 2019 across different parts of the World. The annotations in the provided datasets consists of following humanitarian categories. The dataset consists only english tweets and it is the largest dataset for crisis informatics so far."_ - [Alam et al. (2021)](https://crisisnlp.qcri.org/humaid_dataset)
 
 The HumAID dataset seeks to classify classify input tweets into one of the following humanatarian categories, with the aim of helping disaster response:
 
-- Caution and advice
-- Displaced people and evacuations
-- Dont know cant judge
-- Infrastructure and utility damage
-- Injured or dead people
-- Missing or found people
-- Not humanitarian
-- Other relevant information
-- Requests or urgent needs
-- Rescue volunteering or donation effort
-- Sympathy and support
+1. Caution and advice
+2. Displaced people and evacuations
+3. Dont know cant judge
+4. Infrastructure and utility damage
+5. Injured or dead people
+6. Missing or found people
+7. Not humanitarian
+8. Other relevant information
+9. Requests or urgent needs
+10. Rescue volunteering or donation effort
+11. Sympathy and support
 
 In total, there are **77,196 tweets** in the HumAID dataset.
 
+_**Note:** The "Not humanatarin" label is not actually used in the HumAID dataset as all non-relevant tweets have been pre-filtered out by the authors._
+
 ## Prompt
 
-The [`humaid_zero_shot_prompt.md`](#) file contains the zero-shot prompt for tweet classification:
+The [`humaid_zero_shot_prompt.md`](https://github.com/jrosebr1/rescue-ripple/blob/main/ripple_predict/templates/ripple_predict/humaid_zero_shot_prompt.md) file contains the zero-shot prompt for tweet classification:
 
 ```
 Act as a machine learning model with expert knowledge in disaster management, emergency management, and the classification of social media posts.
@@ -72,7 +74,7 @@ Tweet:
 {{ post }}
 ```
 
-As you can see in the [`classify_post_with_prompt`](#) method, we load this prompt from disk, set the `{{ post }}` template variable (i.e., the tweet itself), and then submit the request to OpenAI for classification. The resulting prediction is then stored in the database.
+As you can see in the [`classify_post_with_prompt`](https://github.com/jrosebr1/rescue-ripple/blob/main/ripple_predict/tasks.py#L17) method, we load this prompt from disk, set the `{{ post }}` template variable (i.e., the tweet itself), and then submit the request to OpenAI for classification. The resulting prediction is then stored in the database.
 
 ## Results
 
@@ -90,8 +92,6 @@ In some instances, such as '2018 Hurricane Florence', 'Hurricane' (i.e., _all_ t
 
 These findings advocate for the 'Embedding + SVM' model as a potent alternative to more computationally demanding deep learning models, offering substantial implications for scenarios where expedient and resource-efficient deployment is paramount for an effective disaster response.
 
-
-
 ### Cost
 
 Applying our prompt-based classification method to the entire HumAID dataset of 77,196 tweets using `gpt-3.5-turbo` cost ~$35 USD.
@@ -105,7 +105,21 @@ This section provides instructions on how to configure your development environm
 
 ### Requirements
 
-...
+This project utilizes:
+
+- Python 3.9+
+- [Django](https://www.djangoproject.com/) (due to the extensive support for Celery and database ORM)
+- [Celery](https://github.com/celery/celery) (for submitting tasks to OpenAI's servers)
+- [Flower](https://github.com/mher/flower) (for monitoring Celery tasks)
+- [Redis](https://redis.io/) (used as a database store for Celery tasks)
+
+You can follow [these instructions to install Redis on your system](https://redis.io/docs/install/install-redis/).
+
+From there, you can install all necessary Python packages via:
+
+```
+$ pip install -r requirements/requirements.txt
+```
 
 ### Starting Redis, Celery, and Flower
 
@@ -122,13 +136,13 @@ $ python manage.py migrate
 $ python manage.py createsuperuser
 ```
 
-Next, launch your [Celery](#) workers:
+Next, launch your [Celery](https://github.com/celery/celery) workers:
 
 ```
 $ celery -A rescue_ripple worker -l INFO
 ```
 
-Finally (and optionally), you can use [Flower](#) to monitor the Celery tasks:
+Finally (and optionally), you can use [Flower](https://github.com/mher/flower) to monitor the Celery tasks:
 
 ```
 $ celery -A rescue_ripple flower
@@ -357,10 +371,10 @@ $ python manage.py tune_model \
 
 Note that hyperparameter tuning can take multiple hours.
 
-The [tune_models.sh](#) file provides further examples of hyperparameter tuning examples.
+The [tune_models.sh](https://github.com/jrosebr1/rescue-ripple/blob/main/tune_models.sh) file provides further examples of hyperparameter tuning examples.
 
 ## License
 
-...
+This repository is licensed under the [MIT license](https://en.wikipedia.org/wiki/MIT_License).
 
 
