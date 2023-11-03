@@ -1,6 +1,6 @@
-IMAGE
-
 # Rescue Ripple: Zero-shot, Prompt-based Classification with LLMs for Disaster Tweet Analysis
+
+![Rescue ripple header](assets/rescue_ripple.png)
 
 In times of crisis, rapid and accurate analysis of social media can be lifesaving. Twitter, a primary platform for real-time communication, provides critical data that, if promptly and correctly analyzed, can significantly aid disaster response efforts. This work introduces "Rescue Ripple," a simplistic, yet highly efficient approach employing zero-shot, prompt-based classification with Large Language Models (LLMs) to analyze disaster-related tweets. Unlike traditional methods requiring extensive labeled datasets and computationally intensive training, our zero-shot framework demonstrates the capability to classify tweets effectively without task-specific fine-tuning.
 
