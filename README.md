@@ -78,7 +78,33 @@ As you can see in the [`classify_post_with_prompt`](https://github.com/jrosebr1/
 
 ## Results
 
-TABLE
+| Data | Alam et al. - Best ML | Alam et al. - Best DL | Rosebrock - Zero Shot | Rosebrock - Embedding + SVM |
+| --- | --- | --- | --- | --- |
+| 2016 Ecuador Earthquake | 0.784 | 0.872 | 0.845 | 0.848 |
+| 2016 Canada Wildfires | 0.738 | 0.792 | 0.758 | 0.776 |
+| 2016 Italy Earthquake | 0.822 | 0.885 | 0.848 | 0.840 |
+| 2016 Kaikoura Earthquake | 0.693 | 0.768 | 0.694 | 0.730 |
+| 2016 Hurricane Matthew | 0.742 | 0.815 | 0.686 | 0.738 |
+| 2017 Sri Lanka Floods | 0.613 | 0.798 | 0.748 | 0.783 |
+| 2017 Hurricane Harvey | 0.719 | 0.763 | 0.643 | 0.739 |
+| 2017 Hurricane Irma | 0.695 | 0.730 | 0.605 | 0.706 |
+| 2017 Hurricane Maria | 0.682 | 0.727 | 0.603 | 0.723 |
+| 2017 Mexico Earthquake | 0.800 | 0.863 | 0.832 | 0.824 |
+| 2018 Kerala Floods | 0.694 | 0.745 | 0.707 | 0.743 |
+| 2018 Hurricane Florence | 0.731 | 0.780 | 0.739 | 0.781 |
+| 2018 California Wildfires | 0.696 | 0.767 | 0.665 | 0.741 |
+| 2019 Cyclone Idai | 0.730 | 0.796 | 0.748 | 0.754 |
+| 2019 Midwestern U.S. Floods | 0.643 | 0.764 | 0.735 | 0.736 |
+| 2019 Hurricane Dorian | 0.688 | 0.693 | 0.594 | 0.692 |
+| 2019 Pakistan Earthquake | 0.766 | 0.834 | 0.787 | 0.805 |
+| Earthquake | 0.783 | 0.839 | 0.793 | 0.821 |
+| Fire | 0.717 | 0.787 | 0.695 | 0.755 |
+| Flood | 0.693 | 0.758 | 0.709 | 0.751 |
+| Hurricane | 0.716 | 0.742 | 0.640 | 0.745 |
+| All | 0.731 | 0.760 | 0.676 | 0.765 |
+| Average | 0.710 | 0.781 | 0.716 | 0.763 |
+
+_**Note:** All results are reported as weighted F1 accuracy (as in Alam et al.)_
 
 In this study, we juxtapose the performance of various machine learning and deep learning algorithms against our proposed methodologies for the classification of disaster-centric tweets.
 
@@ -286,7 +312,9 @@ The HumAID dataset contains a number of `.tsv` files. The `.tsv` files that cont
 Use the following command to ingest _all_ HumAID tweets into the database:
 
 ```
-$ python manage.py load_humaid_tweets --events-set1 HumAID/events_set1 --events-set2 HumAID/events_set2
+$ python manage.py load_humaid_tweets \
+	--events-set1 HumAID/events_set1 \
+	--events-set2 HumAID/events_set2
 ```
 
 ### Classify HumAID tweets with prompt-based methods
@@ -296,13 +324,21 @@ With the HumAID tweets added to the database, you can use the `classify_with_pro
 Here is an example command to classify only the testing tweets in the 2016 Canada Wildfires directory using `gpt-3.5-turbo`:
 
 ```
-$ python manage.py classify_with_prompt --tsv HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_test.tsv --prompt humaid_zero_shot_prompt.md --experiment zero-shot-gpt-3.5-turbo --model gpt-3.5-turbo
+$ python manage.py classify_with_prompt \
+	--tsv HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_test.tsv \
+	--prompt humaid_zero_shot_prompt.md \
+	--experiment zero-shot-gpt-3.5-turbo \
+	--model gpt-3.5-turbo
 ```
 
 Or, if you want to classify _all_ tweets from the test set, you could use this command:
 
 ```
-$ python manage.py classify_with_prompt --tsv HumAID/all_combined/all_test.tsv --prompt humaid_zero_shot_prompt.md --experiment zero-shot-gpt-3.5-turbo --model gpt-3.5-turbo
+$ python manage.py classify_with_prompt \
+	--tsv HumAID/all_combined/all_test.tsv \
+	--prompt humaid_zero_shot_prompt.md \
+	--experiment zero-shot-gpt-3.5-turbo \
+	--model gpt-3.5-turbo
 ```
 
 _**Note:** Make sure both Redis and Celery are running before you run `classify_with_prompt`! Celery handles managing all LLM prompt tasks, and is **required** when running the code from this repo.
@@ -314,13 +350,17 @@ Now that all tweets have been classified using the prompt, you can run the follo
 This command will evaluate Rescue Ripple on the 2016 Canada Wildfires testing set:
 
 ```
-$ python manage.py compute_classification_report --tsv HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_test.tsv --experiment zero-shot-gpt-3.5-turbo
+$ python manage.py compute_classification_report \
+	--tsv HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_test.tsv \
+	--experiment zero-shot-gpt-3.5-turbo
 ```
 
 Whereas this command will perform an evaluation on all tweets belogning to the testing set:
 
 ```
-$ python manage.py compute_classification_report --tsv HumAID/all_combined/all_test.tsv --experiment zero-shot-gpt-3.5-turbo
+$ python manage.py compute_classification_report \
+	--tsv HumAID/all_combined/all_test.tsv \
+	--experiment zero-shot-gpt-3.5-turbo
 ```
 
 ### Computing LLM embeddings on HumAID dataset
@@ -332,15 +372,23 @@ Similar to the `classify_with_prompt` command, you can either run `compute_embed
 Here's how to use the command on the 2019 US Midwestern Floods training set:
 
 ```
-$ python manage.py compute_embeddings --tsv HumAID/events_set2/midwestern_us_floods_2019/midwestern_us_floods_2019_train.tsv --experiment ada-002
+$ python manage.py compute_embeddings \
+	--tsv HumAID/events_set2/midwestern_us_floods_2019/midwestern_us_floods_2019_train.tsv \
+	--experiment ada-002
 ```
 
 Or, you can compute embeddings for the _entire_ HumAID dataset using the following three commands:
 
 ```
-$ python manage.py compute_embeddings --tsv HumAID/all_combined/all_test.tsv --experiment ada-002
-$ python manage.py compute_embeddings --tsv HumAID/all_combined/all_dev.tsv --experiment ada-002
-$ python manage.py compute_embeddings --tsv HumAID/all_combined/all_train.tsv --experiment ada-002
+$ python manage.py compute_embeddings \
+	--tsv HumAID/all_combined/all_test.tsv \
+	--experiment ada-002
+$ python manage.py compute_embeddings \
+	--tsv HumAID/all_combined/all_dev.tsv \
+	--experiment ada-002
+$ python manage.py compute_embeddings \
+	--tsv HumAID/all_combined/all_train.tsv \
+	--experiment ada-002
 ```
 
 Note that computing embeddings for the entire dataset will result in a `db.sqlite3` file that is ~6GB.
@@ -357,6 +405,25 @@ $ python manage.py tune_model \
   --dev HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_dev.tsv \
   --test HumAID/events_set1/canada_wildfires_2016/canada_wildfires_2016_test.tsv \
   --experiment ada-002
+* loading data splits...
+Fitting 1 folds for each of 12 candidates, totalling 12 fits
+* best hyperparameters
+{'C': 10, 'loss': 'squared_hinge', 'penalty': 'l2'}
+* evaluating...
+                                        precision    recall  f1-score   support
+
+                    caution_and_advice      0.400     0.286     0.333        21
+      displaced_people_and_evacuations      0.785     0.827     0.805        75
+     infrastructure_and_utility_damage      0.767     0.920     0.836        50
+                      not_humanitarian      0.375     0.188     0.250        16
+            other_relevant_information      0.607     0.557     0.581        61
+              requests_or_urgent_needs      1.000     0.750     0.857         4
+rescue_volunteering_or_donation_effort      0.878     0.925     0.901       186
+                  sympathy_and_support      0.857     0.750     0.800        32
+
+                              accuracy                          0.787       445
+                             macro avg      0.709     0.650     0.670       445
+                          weighted avg      0.771     0.787     0.776       445
 ```
 
 And here is how to evaluate the accuracy of Rescue Ripple on all tweets in HumAID:
@@ -367,6 +434,27 @@ $ python manage.py tune_model \
   --dev HumAID/all_combined/all_dev.tsv \
   --test HumAID/all_combined/all_test.sv
   --experiment ada-002
+* loading data splits...
+Fitting 1 folds for each of 12 candidates, totalling 12 fits
+* best hyperparameters
+{'C': 1, 'loss': 'squared_hinge', 'penalty': 'l2'}
+* evaluating...
+                                        precision    recall  f1-score   support
+
+                    caution_and_advice      0.715     0.686     0.700      1070
+      displaced_people_and_evacuations      0.869     0.867     0.868       790
+     infrastructure_and_utility_damage      0.774     0.824     0.798      1617
+                injured_or_dead_people      0.895     0.943     0.918      1447
+               missing_or_found_people      0.818     0.625     0.709        72
+                      not_humanitarian      0.640     0.614     0.627      1245
+            other_relevant_information      0.603     0.492     0.542      2407
+              requests_or_urgent_needs      0.635     0.482     0.548       521
+rescue_volunteering_or_donation_effort      0.811     0.927     0.865      4219
+                  sympathy_and_support      0.851     0.802     0.826      1772
+
+                              accuracy                          0.771     15160
+                             macro avg      0.761     0.726     0.740     15160
+                          weighted avg      0.763     0.771     0.765     15160
 ```
 
 Note that hyperparameter tuning can take multiple hours.
@@ -377,4 +465,16 @@ The [tune_models.sh](https://github.com/jrosebr1/rescue-ripple/blob/main/tune_mo
 
 This repository is licensed under the [MIT license](https://en.wikipedia.org/wiki/MIT_License).
 
+## Citation
 
+If you find our work useful, please consider citing it:
+
+```
+@incollection{rosebrock2023zeroshot
+    author = {Adrian Rosebrock},
+    title = {Rescue Ripple: Zero-shot, Prompt-based Classification with LLMs for Disaster Tweet Analysis},
+    booktitle = {NaturalDisasters.ai},
+    year = {2023},
+    url = {https://github.com/jrosebr1/rescue-ripple},
+}
+```
