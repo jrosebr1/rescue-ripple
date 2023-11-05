@@ -149,6 +149,20 @@ From there, you can install all necessary Python packages via:
 $ pip install -r requirements/requirements.txt
 ```
 
+### Edit your configuration file
+
+The root of this repo contains a file named `sample.env`. You need to copy this file, naming the copy `.env`:
+
+```
+$ cp sample.env .env
+```
+
+From there, open the file and set the following values:
+
+- `DJANGO_SECRET_KEY`: Set as a random string of characters
+- `REDIS_URL`: For most users, this value will be `redis://localhost:6379`
+- `OPENAI_API_KEY`: Your OpenAI API key
+
 ### Starting Redis, Celery, and Flower
 
 To start, make sure you have [Redis](https://redis.io/) installed on your machine. You can then launch Redis via:
